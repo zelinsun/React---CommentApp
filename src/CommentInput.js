@@ -5,14 +5,35 @@ class CommentInput extends Component{
 		super();
 		this.state = {
 			userName:'',
-			content: ''
+			content: '',
+			createdTime: ''
 		}
+	}
+
+	componentWillMount(){
+		this._loadName();
+	}
+
+	componentDidMount(){
+		this.textarea.focus();
 	}
 
 	nameChange(event){
 		this.setState({
 			userName: event.target.value
 		})
+	}
+
+	_loadName(){
+		const name = localStorage.getItem('name');
+		if(name){
+			this.setState({userName: name});
+		}
+	}
+
+	nameBlur(event){
+		const name = event.target.value;
+		localStorage.setItem('name', name);
 	}
 
 	contentChange(event){
@@ -22,6 +43,8 @@ class CommentInput extends Component{
 	}
 
 handleSubmit(){
+	const time = new Date();
+	this.setState({createdTime: time.toString()});
 	const comment = this.state;
 	if(!comment.userName){
 		return alert('Please enter username');
@@ -39,13 +62,13 @@ handleSubmit(){
 				<div className='name'>
 					<span>User name:</span>
 					<div className='nameInput'>
-						<input value = {this.state.userName} onChange = {(this.nameChange.bind(this))}/>
+						<input value = {this.state.userName} onChange = {(this.nameChange.bind(this))} onBlur = {this.nameBlur.bind(this)}/>
 					</div>
 				</div>
 				<div className='comment'>
 					<span>Comments</span>
 					<div className='commentInput'> 
-						<textarea value = {this.state.content} onChange = {(this.contentChange.bind(this))}/> 
+						<textarea ref = {(textarea)=> this.textarea = textarea} value = {this.state.content} onChange = {(this.contentChange.bind(this))}/> 
 					</div>
 				</div>
 				<div>
